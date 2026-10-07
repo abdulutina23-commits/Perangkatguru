@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Aplikasi Absensi Murid - MIN 1 Gorontalo Utara">
-<title>Absensi Murid - MIN 1 Gorontalo Utara</title>
+<meta name="description" content="Aplikasi Absensi Siswa - MIN 1 Gorontalo Utara">
+<title>E-Perangkat Kelas - MIN 1 Gorontalo Utara</title>
 <style>
 /* ============================================================
    ROOT VARIABLES & THEME
@@ -716,7 +716,7 @@ select.form-input { cursor: pointer; }
     <div class="sb-header">
       <div class="sb-logo">📋</div>
       <div class="sb-brand">
-        <h3>e-Perangkat</h3>
+        <h3>e-Absensi</h3>
         <small>MIN 1 Gorontalo Utara</small>
       </div>
     </div>
@@ -744,9 +744,12 @@ select.form-input { cursor: pointer; }
       <div class="sb-item" data-page="jurnal-agama" onclick="goPage('jurnal-agama')">
         <span class="sb-icon">&#128332;</span><span class="sb-label">Jurnal Keagamaan</span>
       </div>
+      <div class="sb-item" data-page="kegiatan-harian" onclick="goPage('kegiatan-harian')">
+        <span class="sb-icon">🕒</span><span class="sb-label">Kegiatan Harian</span>
+      </div>
       <div class="sb-section">Kelola</div>
-      <div class="sb-item" data-page="Murid" onclick="goPage('Murid')">
-        <span class="sb-icon">&#128101;</span><span class="sb-label">Data Murid</span>
+      <div class="sb-item" data-page="siswa" onclick="goPage('siswa')">
+        <span class="sb-icon">&#128101;</span><span class="sb-label">Data Siswa</span>
       </div>
       <div class="sb-item" data-page="pengaturan" onclick="goPage('pengaturan')">
         <span class="sb-icon">⚙️</span><span class="sb-label">Pengaturan</span>
@@ -764,7 +767,7 @@ select.form-input { cursor: pointer; }
         <button class="mobile-menu" onclick="toggleMobile()">☰</button>
         <div>
           <div class="page-title" id="pageTitle">Dashboard</div>
-          <div class="page-subtitle" id="pageSubtitle">Ringkasan kehadiran Murid</div>
+          <div class="page-subtitle" id="pageSubtitle">Ringkasan kehadiran siswa</div>
         </div>
       </div>
       <div class="topbar-right">
@@ -781,7 +784,7 @@ select.form-input { cursor: pointer; }
         <div class="welcome-banner">
           <div class="wb-greeting">Assalamu'alaikum 👋</div>
           <div class="wb-title" id="wbTitle">Selamat Datang, Guru!</div>
-          <div class="wb-subtitle" id="wbSubtitle">Kelola absensi Murid dengan mudah dan efisien</div>
+          <div class="wb-subtitle" id="wbSubtitle">Kelola absensi siswa dengan mudah dan efisien</div>
         </div>
 
         <div class="stats-grid" id="dashStats"></div>
@@ -935,19 +938,43 @@ select.form-input { cursor: pointer; }
         </div>
       </div>
 
-      <!-- ====================== DATA Murid ====================== -->
-      <div class="page" id="pg-Murid">
+      <!-- ====================== KEGIATAN HARIAN ====================== -->
+      <div class="page" id="pg-kegiatan-harian">
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><span class="icon">👥</span> Data Murid</div>
+            <div class="card-title"><span class="icon">🕒</span> Jurnal Kegiatan Harian Guru</div>
+            <div style="display:flex;gap:8px;align-items:flex-end;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Bulan Cetak</label>
+                <input type="month" class="form-input" id="printMonthKegiatan" style="padding:6px 10px;height:32px;font-size:12px;">
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="printKegiatanHarian()">🖨️ Cetak Jurnal</button>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:16px;">
+            <div class="form-group" style="max-width:140px;"><label class="form-label">Tanggal</label><input type="date" class="form-input" id="khDate"></div>
+            <div class="form-group" style="max-width:100px;"><label class="form-label">Mulai</label><input type="time" class="form-input" id="khTimeStart" value="07:00"></div>
+            <div class="form-group" style="max-width:100px;"><label class="form-label">Selesai</label><input type="time" class="form-input" id="khTimeEnd" value="16:00"></div>
+            <div class="form-group"><label class="form-label">Uraian Kegiatan</label><input type="text" class="form-input" id="khActivity" placeholder="Contoh: Menyusun perangkat, mengajar, rapat"></div>
+            <div class="form-group" style="display:flex;align-items:flex-end;max-width:110px;"><button class="btn btn-success" style="width:100%;height:41px;" onclick="addKegiatanHarian()">➕ Tambah</button></div>
+          </div>
+          <div id="kegiatanHarianArea"></div>
+        </div>
+      </div>
+
+      <!-- ====================== DATA SISWA ====================== -->
+      <div class="page" id="pg-siswa">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">👥</span> Data Siswa</div>
             <div style="display:flex;gap:8px;">
-              <button class="btn btn-primary btn-sm" onclick="showAddStudentModal()">➕ Tambah Murid</button>
+              <button class="btn btn-primary btn-sm" onclick="showAddStudentModal()">➕ Tambah Siswa</button>
               <button class="btn btn-outline btn-sm" onclick="showBulkAddModal()">📋 Input Massal</button>
             </div>
           </div>
           <div class="action-bar">
             <div class="search-wrap">
-              <input type="text" class="form-input" placeholder="Cari nama Murid..." id="searchStudent" oninput="renderStudentList()">
+              <input type="text" class="form-input" placeholder="Cari nama siswa..." id="searchStudent" oninput="renderStudentList()">
             </div>
           </div>
           <div id="studentListArea"></div>
@@ -1029,7 +1056,8 @@ var DB = {
   attendance: {}, // { "2026-10-01": { "student-id": "H"|"S"|"I"|"A" } }
   asesmen: [],
   jurnalGuru: [],
-  jurnalAgama: []
+  jurnalAgama: [],
+  kegiatanHarian: []
 };
 
 function load() {
@@ -1041,6 +1069,7 @@ function load() {
     if (!DB.asesmen) DB.asesmen = [];
     if (!DB.jurnalGuru) DB.jurnalGuru = [];
     if (!DB.jurnalAgama) DB.jurnalAgama = [];
+    if (!DB.kegiatanHarian) DB.kegiatanHarian = [];
   } catch(e) {}
 }
 
@@ -1064,14 +1093,15 @@ function toast(msg, type) {
    NAVIGATION
    ============================================================ */
 var pageTitles = {
-  'dashboard': ['Dashboard', 'Ringkasan kehadiran Murid'],
-  'input': ['Input Absensi', 'Catat kehadiran Murid harian'],
+  'dashboard': ['Dashboard', 'Ringkasan kehadiran siswa'],
+  'input': ['Input Absensi', 'Catat kehadiran siswa harian'],
   'rekap-bulanan': ['Rekap Bulanan', 'Rekapitulasi absensi per bulan'],
   'rekap-semester': ['Rekap Semester', 'Rekapitulasi absensi satu semester'],
-  'nilai': ['Daftar Nilai', 'Kelola nilai ujian dan tugas Murid'],
+  'nilai': ['Daftar Nilai', 'Kelola nilai ujian dan tugas siswa'],
   'jurnal-guru': ['Jurnal Guru', 'Catatan harian Kegiatan Belajar Mengajar (KBM)'],
   'jurnal-agama': ['Jurnal Keagamaan', 'Catatan pembiasaan keagamaan madrasah'],
-  'Murid': ['Data Murid', 'Kelola daftar Murid'],
+  'kegiatan-harian': ['Kegiatan Harian', 'Catatan aktivitas harian dari jam 07:00 - 16:00'],
+  'siswa': ['Data Siswa', 'Kelola daftar siswa'],
   'pengaturan': ['Pengaturan', 'Konfigurasi kelas dan data']
 };
 
@@ -1099,7 +1129,8 @@ function goPage(id) {
   if (id === 'nilai') initNilaiPage();
   if (id === 'jurnal-guru') initJurnalGuru();
   if (id === 'jurnal-agama') initJurnalAgama();
-  if (id === 'Murid') renderStudentList();
+  if (id === 'kegiatan-harian') initKegiatanHarian();
+  if (id === 'siswa') renderStudentList();
   if (id === 'pengaturan') loadSettings();
 }
 
@@ -1160,23 +1191,23 @@ function renderStudentList() {
   var filtered = DB.students.filter(function(s) { return s.name.toLowerCase().indexOf(q) !== -1; });
 
   if (filtered.length === 0) {
-    area.innerHTML = '<div class="empty-state"><span class="icon">👥</span><h3>Belum ada data Murid</h3><p>Tambahkan Murid terlebih dahulu untuk mulai mencatat absensi</p><button class="btn btn-primary" onclick="showAddStudentModal()">➕ Tambah Murid</button></div>';
+    area.innerHTML = '<div class="empty-state"><span class="icon">👥</span><h3>Belum ada data siswa</h3><p>Tambahkan siswa terlebih dahulu untuk mulai mencatat absensi</p><button class="btn btn-primary" onclick="showAddStudentModal()">➕ Tambah Siswa</button></div>';
     return;
   }
 
-  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Murid</th><th>NISN</th><th>L/P</th><th class="center">Aksi</th></tr></thead><tbody>';
+  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Siswa</th><th>NISN</th><th>L/P</th><th class="center">Aksi</th></tr></thead><tbody>';
   filtered.forEach(function(s, i) {
     html += '<tr><td class="num">' + (i+1) + '</td><td><strong>' + esc(s.name) + '</strong></td><td>' + esc(s.nisn || '-') + '</td><td class="center">' + (s.gender === 'P' ? '<span class="badge badge-red">P</span>' : '<span class="badge badge-blue">L</span>') + '</td><td class="center"><button class="btn btn-outline btn-xs" onclick="editStudent(\'' + s.id + '\')">✏️</button> <button class="btn btn-danger btn-xs" onclick="deleteStudent(\'' + s.id + '\')">🗑️</button></td></tr>';
   });
   html += '</tbody></table></div>';
-  html += '<div style="margin-top:12px;font-size:12px;color:var(--text-muted);">Total: ' + DB.students.length + ' Murid (L: ' + DB.students.filter(function(s){return s.gender==='L';}).length + ', P: ' + DB.students.filter(function(s){return s.gender==='P';}).length + ')</div>';
+  html += '<div style="margin-top:12px;font-size:12px;color:var(--text-muted);">Total: ' + DB.students.length + ' siswa (L: ' + DB.students.filter(function(s){return s.gender==='L';}).length + ', P: ' + DB.students.filter(function(s){return s.gender==='P';}).length + ')</div>';
   area.innerHTML = html;
 }
 
 function showAddStudentModal() {
   openModal(
-    '<div class="modal-title">➕ Tambah Murid</div>' +
-    '<div class="form-group"><label class="form-label">Nama Lengkap</label><input type="text" class="form-input" id="mName" placeholder="Nama Murid"></div>' +
+    '<div class="modal-title">➕ Tambah Siswa</div>' +
+    '<div class="form-group"><label class="form-label">Nama Lengkap</label><input type="text" class="form-input" id="mName" placeholder="Nama siswa"></div>' +
     '<div class="form-row"><div class="form-group"><label class="form-label">NISN</label><input type="text" class="form-input" id="mNISN" placeholder="Opsional"></div><div class="form-group"><label class="form-label">Jenis Kelamin</label><select class="form-input" id="mGender"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div></div>' +
     '<div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="addStudent()">Simpan</button></div>'
   );
@@ -1191,14 +1222,14 @@ function addStudent() {
   save();
   closeModal();
   renderStudentList();
-  toast('Murid "' + name + '" berhasil ditambahkan');
+  toast('Siswa "' + name + '" berhasil ditambahkan');
 }
 
 function editStudent(id) {
   var s = DB.students.find(function(x) { return x.id === id; });
   if (!s) return;
   openModal(
-    '<div class="modal-title">✏️ Edit Murid</div>' +
+    '<div class="modal-title">✏️ Edit Siswa</div>' +
     '<div class="form-group"><label class="form-label">Nama Lengkap</label><input type="text" class="form-input" id="mName" value="' + esc(s.name) + '"></div>' +
     '<div class="form-row"><div class="form-group"><label class="form-label">NISN</label><input type="text" class="form-input" id="mNISN" value="' + esc(s.nisn || '') + '"></div><div class="form-group"><label class="form-label">Jenis Kelamin</label><select class="form-input" id="mGender"><option value="L"' + (s.gender === 'L' ? ' selected' : '') + '>Laki-laki</option><option value="P"' + (s.gender === 'P' ? ' selected' : '') + '>Perempuan</option></select></div></div>' +
     '<div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="updateStudent(\'' + id + '\')">Simpan</button></div>'
@@ -1215,13 +1246,13 @@ function updateStudent(id) {
   save();
   closeModal();
   renderStudentList();
-  toast('Data Murid berhasil diperbarui');
+  toast('Data siswa berhasil diperbarui');
 }
 
 function deleteStudent(id) {
   var s = DB.students.find(function(x) { return x.id === id; });
   if (!s) return;
-  if (!confirm('Hapus Murid "' + s.name + '"? Data absensi Murid ini juga akan terhapus.')) return;
+  if (!confirm('Hapus siswa "' + s.name + '"? Data absensi siswa ini juga akan terhapus.')) return;
   DB.students = DB.students.filter(function(x) { return x.id !== id; });
   // Remove from attendance records
   for (var date in DB.attendance) {
@@ -1229,15 +1260,15 @@ function deleteStudent(id) {
   }
   save();
   renderStudentList();
-  toast('Murid berhasil dihapus');
+  toast('Siswa berhasil dihapus');
 }
 
 function showBulkAddModal() {
   openModal(
-    '<div class="modal-title">📋 Input Massal Murid</div>' +
+    '<div class="modal-title">📋 Input Massal Siswa</div>' +
     '<div class="form-group"><label class="form-label">Masukkan daftar nama (satu nama per baris)</label><textarea class="form-input" id="mBulk" rows="10" placeholder="Ahmad Rizki\nSiti Nurhaliza\nMuhammad Farhan\n..." style="resize:vertical;"></textarea></div>' +
     '<div class="form-row"><div class="form-group"><label class="form-label">Jenis Kelamin Default</label><select class="form-input" id="mBulkGender"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div></div>' +
-    '<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">💡 Anda bisa mengedit jenis kelamin setiap Murid nanti.</p>' +
+    '<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">💡 Anda bisa mengedit jenis kelamin setiap siswa nanti.</p>' +
     '<div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="bulkAddStudents()">Tambah Semua</button></div>'
   );
 }
@@ -1256,7 +1287,7 @@ function bulkAddStudents() {
   save();
   closeModal();
   renderStudentList();
-  toast(added + ' Murid berhasil ditambahkan');
+  toast(added + ' siswa berhasil ditambahkan');
 }
 
 /* ============================================================
@@ -1273,13 +1304,13 @@ function loadDayAttendance() {
   var area = document.getElementById('attTableArea');
 
   if (DB.students.length === 0) {
-    area.innerHTML = '<div class="empty-state"><span class="icon">👥</span><h3>Belum ada Murid</h3><p>Tambahkan data Murid terlebih dahulu</p><button class="btn btn-primary btn-sm" onclick="goPage(\'Murid\')">👥 Data Murid</button></div>';
+    area.innerHTML = '<div class="empty-state"><span class="icon">👥</span><h3>Belum ada siswa</h3><p>Tambahkan data siswa terlebih dahulu</p><button class="btn btn-primary btn-sm" onclick="goPage(\'siswa\')">👥 Data Siswa</button></div>';
     return;
   }
 
   var rec = DB.attendance[date] || {};
 
-  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Murid</th><th>L/P</th><th class="center">Status Kehadiran</th></tr></thead><tbody>';
+  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Siswa</th><th>L/P</th><th class="center">Status Kehadiran</th></tr></thead><tbody>';
   DB.students.forEach(function(s, i) {
     var st = rec[s.id] || '';
     html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(s.name) + '</td><td class="center">' + s.gender + '</td>';
@@ -1293,7 +1324,7 @@ function loadDayAttendance() {
 
   var filled = 0;
   DB.students.forEach(function(s) { if (rec[s.id]) filled++; });
-  html += '<div style="margin-top:12px;font-size:12px;color:var(--text-muted);">Terisi: ' + filled + '/' + DB.students.length + ' Murid</div>';
+  html += '<div style="margin-top:12px;font-size:12px;color:var(--text-muted);">Terisi: ' + filled + '/' + DB.students.length + ' siswa</div>';
 
   area.innerHTML = html;
 }
@@ -1316,7 +1347,7 @@ function setAllStatus(code) {
   if (!DB.attendance[date]) DB.attendance[date] = {};
   DB.students.forEach(function(s) { DB.attendance[date][s.id] = code; });
   loadDayAttendance();
-  toast('Semua Murid diset: ' + code);
+  toast('Semua siswa diset: ' + code);
 }
 
 function saveDayAttendance() {
@@ -1327,7 +1358,7 @@ function saveDayAttendance() {
   var rec = DB.attendance[date] || {};
   var missing = DB.students.filter(function(s) { return !rec[s.id]; });
   if (missing.length > 0) {
-    toast(missing.length + ' Murid belum diisi statusnya', 'info');
+    toast(missing.length + ' siswa belum diisi statusnya', 'info');
   }
 }
 
@@ -1359,7 +1390,7 @@ function renderRekapBulanan() {
   var area = document.getElementById('rekapBulananArea');
 
   if (DB.students.length === 0) {
-    area.innerHTML = '<div class="empty-state"><span class="icon">📅</span><h3>Belum ada data</h3><p>Tambahkan Murid dan isi absensi terlebih dahulu</p></div>';
+    area.innerHTML = '<div class="empty-state"><span class="icon">📅</span><h3>Belum ada data</h3><p>Tambahkan siswa dan isi absensi terlebih dahulu</p></div>';
     return;
   }
 
@@ -1369,7 +1400,7 @@ function renderRekapBulanan() {
     if (isWeekday(year, month, d)) schoolDays.push(d);
   }
 
-  var html = '<div class="att-table-container"><table class="table"><thead><tr><th class="num" style="min-width:36px;">No</th><th style="min-width:150px;">Nama Murid</th>';
+  var html = '<div class="att-table-container"><table class="table"><thead><tr><th class="num" style="min-width:36px;">No</th><th style="min-width:150px;">Nama Siswa</th>';
   schoolDays.forEach(function(d) { html += '<th class="center num-col">' + d + '</th>'; });
   html += '<th class="center" style="min-width:36px;background:var(--green-light);color:var(--green-dark);">H</th>';
   html += '<th class="center" style="min-width:36px;background:var(--blue-light);color:var(--blue-dark);">S</th>';
@@ -1431,7 +1462,7 @@ function renderRekapSemester() {
   var monthRange = sem === 1 ? [6,7,8,9,10,11] : [0,1,2,3,4,5];
   var semYear = sem === 1 ? year : year + 1;
 
-  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Murid</th><th>L/P</th>';
+  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Siswa</th><th>L/P</th>';
   monthRange.forEach(function(m) {
     html += '<th class="center" colspan="4" style="font-size:11px;">' + MONTHS[m].substr(0,3) + '</th>';
   });
@@ -1519,9 +1550,9 @@ function renderNilaiTable() {
   var asesmen = DB.asesmen.find(function(a) { return a.id === aid; });
   if(!asesmen) return;
   
-  if(DB.students.length === 0) { area.innerHTML = '<div class="empty-state">Data Murid masih kosong. Tambahkan Murid terlebih dahulu.</div>'; return; }
+  if(DB.students.length === 0) { area.innerHTML = '<div class="empty-state">Data siswa masih kosong. Tambahkan siswa terlebih dahulu.</div>'; return; }
 
-  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Murid</th><th class="center">L/P</th><th style="width:120px" class="center">Nilai</th></tr></thead><tbody>';
+  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th>Nama Siswa</th><th class="center">L/P</th><th style="width:120px" class="center">Nilai</th></tr></thead><tbody>';
   DB.students.forEach(function(s, i) {
     var score = asesmen.scores[s.id] || '';
     html += '<tr><td class="num">' + (i+1) + '</td><td>' + esc(s.name) + '</td><td class="center">' + s.gender + '</td><td class="center"><input type="number" class="form-input" style="text-align:center;padding:6px;height:32px;" value="' + score + '" onchange="saveScore(\'' + aid + '\',\'' + s.id + '\', this.value)" placeholder="0-100"></td></tr>';
@@ -1541,11 +1572,11 @@ function deleteAsesmen(aid) {
 }
 function printRekapNilai() {
   if(!DB.asesmen || DB.asesmen.length === 0) { toast('Belum ada satupun daftar nilai', 'error'); return; }
-  var html = '<h2>REKAPITULASI NILAI Murid</h2>';
+  var html = '<h2>REKAPITULASI NILAI SISWA</h2>';
   html += '<h3>' + esc(DB.settings.school) + ' - Kelas ' + esc(DB.settings.class) + '</h3>';
   html += '<p style="text-align:center;margin-bottom:12px;">Tahun Ajaran: ' + esc(DB.settings.tahun) + '</p>';
   
-  html += '<table><thead><tr><th style="width:30px;">No</th><th>Nama Murid</th>';
+  html += '<table><thead><tr><th style="width:30px;">No</th><th>Nama Siswa</th>';
   DB.asesmen.forEach(function(a) { html += '<th style="font-size:10px;">' + esc(a.title) + '<br>' + a.date + '</th>'; });
   html += '</tr></thead><tbody>';
   
@@ -1686,6 +1717,76 @@ function printJurnalAgama() {
 }
 
 /* ============================================================
+   KEGIATAN HARIAN
+   ============================================================ */
+function initKegiatanHarian() {
+  if(!DB.kegiatanHarian) DB.kegiatanHarian = [];
+  document.getElementById('khDate').value = todayStr();
+  var now = new Date();
+  document.getElementById('printMonthKegiatan').value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  renderKegiatanHarian();
+}
+function renderKegiatanHarian() {
+  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th style="width:100px">Tanggal</th><th style="width:120px">Waktu</th><th>Uraian Kegiatan</th><th class="center">Aksi</th></tr></thead><tbody>';
+  var sorted = DB.kegiatanHarian.slice().sort(function(a,b){ 
+    var c = b.date.localeCompare(a.date);
+    if(c === 0) return b.start.localeCompare(a.start);
+    return c;
+  });
+  sorted.forEach(function(k, i) {
+    html += '<tr><td class="num">' + (i+1) + '</td><td>' + k.date + '</td><td>' + k.start + ' - ' + k.end + '</td><td>' + esc(k.activity) + '</td><td class="center"><button class="btn btn-danger btn-xs" onclick="deleteKegiatanHarian(\'' + k.id + '\')">&#128465;</button></td></tr>';
+  });
+  if(sorted.length === 0) html += '<tr><td colspan="5" class="center" style="padding:20px;color:var(--text-muted);">Belum ada catatan kegiatan harian</td></tr>';
+  html += '</tbody></table></div>';
+  document.getElementById('kegiatanHarianArea').innerHTML = html;
+}
+function addKegiatanHarian() {
+  var d = document.getElementById('khDate').value;
+  var ts = document.getElementById('khTimeStart').value;
+  var te = document.getElementById('khTimeEnd').value;
+  var a = document.getElementById('khActivity').value.trim();
+  if(!d || !ts || !te || !a) { toast('Tanggal, waktu, dan uraian wajib diisi', 'error'); return; }
+  DB.kegiatanHarian.push({ id: uid(), date: d, start: ts, end: te, activity: a });
+  save(); renderKegiatanHarian(); toast('Kegiatan harian ditambahkan');
+  document.getElementById('khActivity').value = '';
+}
+function deleteKegiatanHarian(id) {
+  if(!confirm('Hapus catatan kegiatan ini?')) return;
+  DB.kegiatanHarian = DB.kegiatanHarian.filter(function(k) { return k.id !== id; });
+  save(); renderKegiatanHarian(); toast('Catatan dihapus');
+}
+function printKegiatanHarian() {
+  var pm = document.getElementById('printMonthKegiatan').value;
+  if(!pm) { toast('Pilih bulan cetak', 'error'); return; }
+  var pts = pm.split('-'); var yyyy = pts[0]; var mm = parseInt(pts[1]) - 1;
+  var entries = DB.kegiatanHarian.filter(function(k) { return k.date.startsWith(pm); }).sort(function(a,b){ 
+    var c = a.date.localeCompare(b.date);
+    if (c === 0) return a.start.localeCompare(b.start);
+    return c;
+  });
+  
+  var html = '<h2>JURNAL KEGIATAN HARIAN GURU</h2>';
+  html += '<h3>' + esc(DB.settings.school) + ' - Kelas ' + esc(DB.settings.class) + '</h3>';
+  html += '<p style="text-align:center;margin-bottom:12px;">Bulan: ' + MONTHS[mm] + ' ' + yyyy + ' | Tahun Ajaran: ' + esc(DB.settings.tahun) + '</p>';
+  
+  html += '<table><thead><tr><th style="width:30px;">No</th><th style="width:80px;">Tanggal</th><th style="width:100px;">Waktu</th><th>Uraian Kegiatan</th></tr></thead><tbody>';
+  if(entries.length === 0) {
+    html += '<tr><td colspan="4" style="text-align:center;padding:10px;">Tidak ada kegiatan pada bulan ini</td></tr>';
+  } else {
+    entries.forEach(function(k, i) {
+      html += '<tr><td>' + (i+1) + '</td><td>' + k.date + '</td><td>' + k.start + ' - ' + k.end + '</td><td style="text-align:left;">' + esc(k.activity) + '</td></tr>';
+    });
+  }
+  html += '</tbody></table>';
+  
+  html += '<div class="sign-area"><div class="sign-block"><p>Mengetahui,</p><p>Kepala Madrasah</p><div class="sign-line"></div><p><strong>' + esc(DB.settings.kepsek || '.....................') + '</strong></p><p>NIP. ' + esc(DB.settings.kepsekNIP || '.....................') + '</p></div>';
+  html += '<div class="sign-block"><p>Gorontalo Utara, ' + new Date().getDate() + ' ' + MONTHS[new Date().getMonth()] + ' ' + new Date().getFullYear() + '</p><p>Guru Kelas</p><div class="sign-line"></div><p><strong>' + esc(DB.settings.teacher || '.....................') + '</strong></p><p>NIP. ' + esc(DB.settings.nip || '.....................') + '</p></div></div>';
+  
+  document.getElementById('printArea').innerHTML = html;
+  setTimeout(function() { window.print(); }, 300);
+}
+
+/* ============================================================
    PRINT
    ============================================================ */
 function printRekapBulanan() {
@@ -1695,11 +1796,11 @@ function printRekapBulanan() {
   var schoolDays = [];
   for (var d = 1; d <= totalDays; d++) { if (isWeekday(year, month, d)) schoolDays.push(d); }
 
-  var html = '<h2>REKAP ABSENSI Murid</h2>';
+  var html = '<h2>REKAP ABSENSI SISWA</h2>';
   html += '<h3>' + esc(DB.settings.school) + ' - Kelas ' + esc(DB.settings.class) + '</h3>';
   html += '<p style="text-align:center;margin-bottom:12px;">Bulan: ' + MONTHS[month] + ' ' + year + ' | Tahun Ajaran: ' + esc(DB.settings.tahun) + '</p>';
 
-  html += '<table><thead><tr><th>No</th><th>Nama Murid</th>';
+  html += '<table><thead><tr><th>No</th><th>Nama Siswa</th>';
   schoolDays.forEach(function(d) { html += '<th>' + d + '</th>'; });
   html += '<th>H</th><th>S</th><th>I</th><th>A</th></tr></thead><tbody>';
 
@@ -1784,7 +1885,7 @@ function exportRekapBulananCSV() {
   var year = parseInt(document.getElementById('rekapYear').value);
   
   if (DB.students.length === 0) {
-    toast('Belum ada data Murid untuk diekspor', 'error');
+    toast('Belum ada data siswa untuk diekspor', 'error');
     return;
   }
 
@@ -1793,7 +1894,7 @@ function exportRekapBulananCSV() {
   for (var d = 1; d <= totalDays; d++) { if (isWeekday(year, month, d)) schoolDays.push(d); }
 
   var rows = [];
-  var header = ['No', 'Nama Murid', 'L/P'];
+  var header = ['No', 'Nama Siswa', 'L/P'];
   schoolDays.forEach(function(d) { header.push(d); });
   header.push('H', 'S', 'I', 'A');
   rows.push(header.join(','));
@@ -1827,7 +1928,7 @@ function exportRekapSemesterCSV() {
   var year = parseInt(document.getElementById('semesterYear').value);
   
   if (DB.students.length === 0) {
-    toast('Belum ada data Murid untuk diekspor', 'error');
+    toast('Belum ada data siswa untuk diekspor', 'error');
     return;
   }
 
@@ -1835,7 +1936,7 @@ function exportRekapSemesterCSV() {
   var semYear = sem === 1 ? year : year + 1;
 
   var rows = [];
-  var header = ['No', 'Nama Murid', 'L/P'];
+  var header = ['No', 'Nama Siswa', 'L/P'];
   monthRange.forEach(function(m) {
     var mName = MONTHS[m].substr(0, 3);
     header.push(mName + ' H', mName + ' S', mName + ' I', mName + ' A');
@@ -1902,7 +2003,7 @@ function renderDashboard() {
 
   // Stats
   document.getElementById('dashStats').innerHTML =
-    '<div class="stat-card blue"><div class="stat-top"><div class="stat-icon blue">👥</div></div><div class="stat-val">' + total + '</div><div class="stat-label">Total Murid</div></div>' +
+    '<div class="stat-card blue"><div class="stat-top"><div class="stat-icon blue">👥</div></div><div class="stat-val">' + total + '</div><div class="stat-label">Total Siswa</div></div>' +
     '<div class="stat-card green"><div class="stat-top"><div class="stat-icon green">✅</div></div><div class="stat-val">' + h + '</div><div class="stat-label">Hadir Hari Ini</div></div>' +
     '<div class="stat-card orange"><div class="stat-top"><div class="stat-icon orange">📄</div></div><div class="stat-val">' + (s + iz) + '</div><div class="stat-label">Sakit / Izin</div></div>' +
     '<div class="stat-card red"><div class="stat-top"><div class="stat-icon red">❌</div></div><div class="stat-val">' + a + '</div><div class="stat-label">Alpa</div></div>' +
@@ -2017,7 +2118,7 @@ function importData(e) {
 }
 
 function resetAll() {
-  if (!confirm('PERINGATAN: Semua data (Murid, absensi, pengaturan) akan dihapus permanen. Lanjutkan?')) return;
+  if (!confirm('PERINGATAN: Semua data (siswa, absensi, pengaturan) akan dihapus permanen. Lanjutkan?')) return;
   localStorage.removeItem('eabsensi_data');
   location.reload();
 }
