@@ -951,12 +951,16 @@ select.form-input { cursor: pointer; }
               <button class="btn btn-outline btn-sm" onclick="printKegiatanHarian()">🖨️ Cetak Jurnal</button>
             </div>
           </div>
-          <div class="form-row" style="margin-bottom:16px;">
+          <div class="form-row" style="margin-bottom:12px;">
             <div class="form-group" style="max-width:140px;"><label class="form-label">Tanggal</label><input type="date" class="form-input" id="khDate"></div>
             <div class="form-group" style="max-width:100px;"><label class="form-label">Mulai</label><input type="time" class="form-input" id="khTimeStart" value="07:00"></div>
             <div class="form-group" style="max-width:100px;"><label class="form-label">Selesai</label><input type="time" class="form-input" id="khTimeEnd" value="16:00"></div>
             <div class="form-group"><label class="form-label">Uraian Kegiatan</label><input type="text" class="form-input" id="khActivity" placeholder="Contoh: Menyusun perangkat, mengajar, rapat"></div>
-            <div class="form-group" style="display:flex;align-items:flex-end;max-width:110px;"><button class="btn btn-success" style="width:100%;height:41px;" onclick="addKegiatanHarian()">➕ Tambah</button></div>
+          </div>
+          <div class="form-row" style="margin-bottom:16px;">
+            <div class="form-group"><label class="form-label">Target</label><input type="text" class="form-input" id="khTarget" placeholder="Contoh: Perangkat RPP selesai 1 Bab"></div>
+            <div class="form-group"><label class="form-label">Capaian</label><input type="text" class="form-input" id="khCapaian" placeholder="Contoh: Tercapai 100%"></div>
+            <div class="form-group" style="display:flex;align-items:flex-end;max-width:160px;"><button class="btn btn-success" style="width:100%;height:41px;" onclick="addKegiatanHarian()">➕ Tambah Kegiatan</button></div>
           </div>
           <div id="kegiatanHarianArea"></div>
         </div>
@@ -1727,16 +1731,16 @@ function initKegiatanHarian() {
   renderKegiatanHarian();
 }
 function renderKegiatanHarian() {
-  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th style="width:100px">Tanggal</th><th style="width:120px">Waktu</th><th>Uraian Kegiatan</th><th class="center">Aksi</th></tr></thead><tbody>';
+  var html = '<div class="table-wrap"><table class="table"><thead><tr><th class="num">No</th><th style="width:100px">Tanggal</th><th style="width:120px">Waktu</th><th>Uraian Kegiatan</th><th>Target</th><th>Capaian</th><th class="center">Aksi</th></tr></thead><tbody>';
   var sorted = DB.kegiatanHarian.slice().sort(function(a,b){ 
     var c = b.date.localeCompare(a.date);
     if(c === 0) return b.start.localeCompare(a.start);
     return c;
   });
   sorted.forEach(function(k, i) {
-    html += '<tr><td class="num">' + (i+1) + '</td><td>' + k.date + '</td><td>' + k.start + ' - ' + k.end + '</td><td>' + esc(k.activity) + '</td><td class="center"><button class="btn btn-danger btn-xs" onclick="deleteKegiatanHarian(\'' + k.id + '\')">&#128465;</button></td></tr>';
+    html += '<tr><td class="num">' + (i+1) + '</td><td>' + k.date + '</td><td>' + k.start + ' - ' + k.end + '</td><td>' + esc(k.activity) + '</td><td>' + esc(k.target || '-') + '</td><td>' + esc(k.capaian || '-') + '</td><td class="center"><button class="btn btn-danger btn-xs" onclick="deleteKegiatanHarian(\'' + k.id + '\')">&#128465;</button></td></tr>';
   });
-  if(sorted.length === 0) html += '<tr><td colspan="5" class="center" style="padding:20px;color:var(--text-muted);">Belum ada catatan kegiatan harian</td></tr>';
+  if(sorted.length === 0) html += '<tr><td colspan="7" class="center" style="padding:20px;color:var(--text-muted);">Belum ada catatan kegiatan harian</td></tr>';
   html += '</tbody></table></div>';
   document.getElementById('kegiatanHarianArea').innerHTML = html;
 }
@@ -1745,10 +1749,16 @@ function addKegiatanHarian() {
   var ts = document.getElementById('khTimeStart').value;
   var te = document.getElementById('khTimeEnd').value;
   var a = document.getElementById('khActivity').value.trim();
+  var tgt = document.getElementById('khTarget').value.trim();
+  var cap = document.getElementById('khCapaian').value.trim();
+  
   if(!d || !ts || !te || !a) { toast('Tanggal, waktu, dan uraian wajib diisi', 'error'); return; }
-  DB.kegiatanHarian.push({ id: uid(), date: d, start: ts, end: te, activity: a });
+  DB.kegiatanHarian.push({ id: uid(), date: d, start: ts, end: te, activity: a, target: tgt, capaian: cap });
   save(); renderKegiatanHarian(); toast('Kegiatan harian ditambahkan');
+  
   document.getElementById('khActivity').value = '';
+  document.getElementById('khTarget').value = '';
+  document.getElementById('khCapaian').value = '';
 }
 function deleteKegiatanHarian(id) {
   if(!confirm('Hapus catatan kegiatan ini?')) return;
@@ -1769,12 +1779,12 @@ function printKegiatanHarian() {
   html += '<h3>' + esc(DB.settings.school) + ' - Kelas ' + esc(DB.settings.class) + '</h3>';
   html += '<p style="text-align:center;margin-bottom:12px;">Bulan: ' + MONTHS[mm] + ' ' + yyyy + ' | Tahun Ajaran: ' + esc(DB.settings.tahun) + '</p>';
   
-  html += '<table><thead><tr><th style="width:30px;">No</th><th style="width:80px;">Tanggal</th><th style="width:100px;">Waktu</th><th>Uraian Kegiatan</th></tr></thead><tbody>';
+  html += '<table><thead><tr><th style="width:30px;">No</th><th style="width:80px;">Tanggal</th><th style="width:90px;">Waktu</th><th>Uraian Kegiatan</th><th>Target</th><th>Capaian</th></tr></thead><tbody>';
   if(entries.length === 0) {
-    html += '<tr><td colspan="4" style="text-align:center;padding:10px;">Tidak ada kegiatan pada bulan ini</td></tr>';
+    html += '<tr><td colspan="6" style="text-align:center;padding:10px;">Tidak ada kegiatan pada bulan ini</td></tr>';
   } else {
     entries.forEach(function(k, i) {
-      html += '<tr><td>' + (i+1) + '</td><td>' + k.date + '</td><td>' + k.start + ' - ' + k.end + '</td><td style="text-align:left;">' + esc(k.activity) + '</td></tr>';
+      html += '<tr><td>' + (i+1) + '</td><td>' + k.date + '</td><td>' + k.start + ' - ' + k.end + '</td><td style="text-align:left;">' + esc(k.activity) + '</td><td style="text-align:left;">' + esc(k.target || '-') + '</td><td style="text-align:left;">' + esc(k.capaian || '-') + '</td></tr>';
     });
   }
   html += '</tbody></table>';
